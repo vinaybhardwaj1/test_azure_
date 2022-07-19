@@ -1,0 +1,19 @@
+{
+	"name": "DailyLoadFcast_source",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureBlobStorage_test",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Xml",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "PUB_DailyLoadFcst_202207041215.xml",
+				"folderPath": "DailyLoadFcast_Test_Files",
+				"container": "sqlite-blobstorage"
+			}
+		}
+	}
+}
