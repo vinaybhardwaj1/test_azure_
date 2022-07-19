@@ -35,7 +35,75 @@
 						"tableOption": "autoCreate",
 						"disableMetricsCollection": false
 					},
-					"enableStaging": false
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "$['OutboundData']['PUB_DailyLoadFcst'][0]['DeliveryDate']"
+								},
+								"sink": {
+									"name": "DeliveryDate",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"path": "$['OutboundData']['PUB_DailyLoadFcst'][0]['TradeDate']"
+								},
+								"sink": {
+									"name": "TradeDate",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"path": "$['OutboundData']['PUB_DailyLoadFcst'][0]['StartTime']"
+								},
+								"sink": {
+									"name": "StartTime",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"path": "$['OutboundData']['PUB_DailyLoadFcst'][0]['EndTime']"
+								},
+								"sink": {
+									"name": "EndTime",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"path": "$['OutboundData']['PUB_DailyLoadFcst'][0]['LoadForecastROI']"
+								},
+								"sink": {
+									"name": "LoadForecastROI",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"path": "$['OutboundData']['PUB_DailyLoadFcst'][0]['LoadForecastNI']"
+								},
+								"sink": {
+									"name": "LoadForecastNI",
+									"type": "Decimal"
+								}
+							},
+							{
+								"source": {
+									"path": "$['OutboundData']['PUB_DailyLoadFcst'][0]['AggregatedForecast']"
+								},
+								"sink": {
+									"name": "AggregatedForecast",
+									"type": "Decimal"
+								}
+							}
+						]
+					}
 				},
 				"inputs": [
 					{
