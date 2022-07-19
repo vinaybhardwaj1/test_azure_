@@ -9,7 +9,7 @@
 		"type": "AzureSqlTable",
 		"schema": [],
 		"typeProperties": {
-			"schema": "edh_db_1",
+			"schema": "dbo",
 			"table": "test_dailyLoadFcast"
 		}
 	}
