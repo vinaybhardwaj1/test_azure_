@@ -1,0 +1,9 @@
+{
+	"name": "ADF-EDH-DEV-1",
+	"location": "northeurope",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "15dc84c6-8195-4c24-b8df-3f9335581e77",
+		"tenantId": "8a8b79a2-c303-4578-b775-db5b6db2a3b1"
+	}
+}
