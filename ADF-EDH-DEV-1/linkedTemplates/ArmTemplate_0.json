@@ -1,0 +1,231 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "ADF-EDH-DEV-1"
+		},
+		"AzureBlobStorage_test_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage_test'"
+		},
+		"AzureSqlDatabase_sink_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureSqlDatabase_sink'"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureBlobStorage_test')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('AzureBlobStorage_test_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlDatabase_sink')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('AzureSqlDatabase_sink_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DailyLoadFcast_source')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage_test",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Xml",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "PUB_DailyLoadFcst_202207041215.xml",
+						"folderPath": "DailyLoadFcast_Test_Files",
+						"container": "sqlite-blobstorage"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage_test')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DailyLoadFcast_test')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabase_sink",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "test_dailyLoadFcast"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase_sink')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ETL_DailyLoadFcast_test')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "XmlSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "XmlReadSettings",
+									"validationMode": "none",
+									"namespaces": true
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false,
+								"tableOption": "autoCreate",
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"path": "$['OutboundData']['PUB_DailyLoadFcst'][0]['DeliveryDate']"
+										},
+										"sink": {
+											"name": "DeliveryDate",
+											"type": "DateTime"
+										}
+									},
+									{
+										"source": {
+											"path": "$['OutboundData']['PUB_DailyLoadFcst'][0]['TradeDate']"
+										},
+										"sink": {
+											"name": "TradeDate",
+											"type": "DateTime"
+										}
+									},
+									{
+										"source": {
+											"path": "$['OutboundData']['PUB_DailyLoadFcst'][0]['StartTime']"
+										},
+										"sink": {
+											"name": "StartTime",
+											"type": "DateTime"
+										}
+									},
+									{
+										"source": {
+											"path": "$['OutboundData']['PUB_DailyLoadFcst'][0]['EndTime']"
+										},
+										"sink": {
+											"name": "EndTime",
+											"type": "DateTime"
+										}
+									},
+									{
+										"source": {
+											"path": "$['OutboundData']['PUB_DailyLoadFcst'][0]['LoadForecastROI']"
+										},
+										"sink": {
+											"name": "LoadForecastROI",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"path": "$['OutboundData']['PUB_DailyLoadFcst'][0]['LoadForecastNI']"
+										},
+										"sink": {
+											"name": "LoadForecastNI",
+											"type": "Decimal"
+										}
+									},
+									{
+										"source": {
+											"path": "$['OutboundData']['PUB_DailyLoadFcst'][0]['AggregatedForecast']"
+										},
+										"sink": {
+											"name": "AggregatedForecast",
+											"type": "Decimal"
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "DailyLoadFcast_source",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "DailyLoadFcast_test",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DailyLoadFcast_source')]",
+				"[concat(variables('factoryId'), '/datasets/DailyLoadFcast_test')]"
+			]
+		}
+	]
+}
