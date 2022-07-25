@@ -1,0 +1,31 @@
+{
+	"name": "DFDailyLoadFcast",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DailyLoadFcast_source",
+						"type": "DatasetReference"
+					},
+					"name": "DFDailyLoadFcastSource"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "alterRow1"
+				}
+			],
+			"scriptLines": [
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     validationMode: 'none',",
+				"     namespaces: true) ~> DFDailyLoadFcastSource",
+				"DFDailyLoadFcastSource alterRow() ~> alterRow1"
+			]
+		}
+	}
+}
