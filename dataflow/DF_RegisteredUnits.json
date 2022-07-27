@@ -1,5 +1,5 @@
 {
-	"name": "dataflow1",
+	"name": "DF_RegisteredUnits",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
@@ -27,6 +27,9 @@
 				},
 				{
 					"name": "parseRegUnitXML"
+				},
+				{
+					"name": "parse1"
 				}
 			],
 			"scriptLines": [
@@ -40,7 +43,7 @@
 				"     namespaces: true) ~> RegUnitsSource",
 				"parseRegUnitXML select(skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> FormatRegUnits",
-				"RegUnitsSource parse(unit_id = OutboundData.PUB_DailyRegisteredUnits.{@UnitID} ? string,",
+				"parse1 parse(unit_id = OutboundData.PUB_DailyRegisteredUnits.{@UnitID} ? string,",
 				"          unit_type = OutboundData.PUB_DailyRegisteredUnits.{@UnitType} ? string,",
 				"          party_id = OutboundData.PUB_DailyRegisteredUnits.{@PartyID} ? string,",
 				"          party_name = OutboundData.PUB_DailyRegisteredUnits.{@PartyName} ? string,",
@@ -53,6 +56,9 @@
 				"          registration_date = OutboundData.PUB_DailyRegisteredUnits.{@RegistrationDate} ? timestamp,",
 				"     format: 'xml',",
 				"     namespaces: true) ~> parseRegUnitXML",
+				"RegUnitsSource parse(RegisteredUnitsXML = OutboundDataOutboundData.PUB_DailyRegisteredUnits,",
+				"     format: 'json',",
+				"     documentForm: 'documentPerLine') ~> parse1",
 				"FormatRegUnits sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
