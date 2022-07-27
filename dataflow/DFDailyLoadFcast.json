@@ -6,7 +6,7 @@
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "DailyLoadFcast_source",
+						"referenceName": "DS_FILE_DailyLoadFcastSource",
 						"type": "DatasetReference"
 					},
 					"name": "DFDailyLoadFcastSource"

@@ -1,9 +1,12 @@
 {
-	"name": "DailyLoadFcast_test",
+	"name": "DS_ASQL_DailyLoadFcastSink",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "AzureSqlDatabase_sink",
 			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "DailyLoadFcast"
 		},
 		"annotations": [],
 		"type": "AzureSqlTable",

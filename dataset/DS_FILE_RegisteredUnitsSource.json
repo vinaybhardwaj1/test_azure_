@@ -1,20 +1,20 @@
 {
-	"name": "DS_FILE_DailyLoadFcastSource",
+	"name": "DS_FILE_RegisteredUnitsSource",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "AzureBlobStorage_test",
 			"type": "LinkedServiceReference"
 		},
 		"folder": {
-			"name": "DailyLoadFcast"
+			"name": "RegisteredUnits"
 		},
 		"annotations": [],
 		"type": "Xml",
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "PUB_DailyLoadFcst_202207041215.xml",
-				"folderPath": "DailyLoadFcast_Test_Files",
+				"fileName": "PUB_DailyRegisteredUnits_202206240756.xml",
+				"folderPath": "RegisteredUnits",
 				"container": "sqlite-blobstorage"
 			}
 		}
