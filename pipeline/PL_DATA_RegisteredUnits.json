@@ -1,0 +1,10 @@
+{
+	"name": "PL_DATA_RegisteredUnits",
+	"properties": {
+		"description": "This pipeline extracts registered units data from xml report and loads data to registered_units, and processed_files tables.",
+		"folder": {
+			"name": "PL_DATA"
+		},
+		"annotations": []
+	}
+}

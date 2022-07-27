@@ -119,6 +119,9 @@
 				]
 			}
 		],
+		"folder": {
+			"name": "PL_DATA"
+		},
 		"annotations": []
 	}
 }
