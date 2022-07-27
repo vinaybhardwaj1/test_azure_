@@ -2,6 +2,166 @@
 	"name": "PL_DATA_RegisteredUnits",
 	"properties": {
 		"description": "This pipeline extracts registered units data from xml report and loads data to registered_units, and processed_files tables.",
+		"activities": [
+			{
+				"name": "ETLRegisteredUnits",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "XmlSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "XmlReadSettings",
+							"validationMode": "none",
+							"namespaces": true
+						}
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "upsert",
+						"upsertSettings": {
+							"useTempDB": true,
+							"keys": [
+								"unit_id"
+							]
+						},
+						"sqlWriterUseTableLock": false,
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "$['OutboundData']['PUB_DailyRegisteredUnits'][0]['@PartyID']"
+								},
+								"sink": {
+									"name": "party_id",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['OutboundData']['PUB_DailyRegisteredUnits'][0]['@PartyName']"
+								},
+								"sink": {
+									"name": "party_name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['OutboundData']['PUB_DailyRegisteredUnits'][0]['@AssociatedParticipantID']"
+								},
+								"sink": {
+									"name": "associated_participant_id",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['OutboundData']['PUB_DailyRegisteredUnits'][0]['@AssociatedParticipantName']"
+								},
+								"sink": {
+									"name": "associated_participant_name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['OutboundData']['PUB_DailyRegisteredUnits'][0]['@TradingSiteID']"
+								},
+								"sink": {
+									"name": "trading_site_id",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['OutboundData']['PUB_DailyRegisteredUnits'][0]['@UnitID']"
+								},
+								"sink": {
+									"name": "unit_id",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['OutboundData']['PUB_DailyRegisteredUnits'][0]['@UnitType']"
+								},
+								"sink": {
+									"name": "unit_type",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['OutboundData']['PUB_DailyRegisteredUnits'][0]['@AOLRRegistered']"
+								},
+								"sink": {
+									"name": "aolr_registered",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['OutboundData']['PUB_DailyRegisteredUnits'][0]['@Status']"
+								},
+								"sink": {
+									"name": "status",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['OutboundData']['PUB_DailyRegisteredUnits'][0]['@RegistrationDate']"
+								},
+								"sink": {
+									"name": "registration_date",
+									"type": "DateTime"
+								}
+							},
+							{
+								"source": {
+									"path": "$['OutboundData']['@PublishTime']"
+								},
+								"sink": {
+									"name": "last_updated",
+									"type": "DateTime"
+								}
+							}
+						],
+						"mapComplexValuesToString": true
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_FILE_RegisteredUnitsSource",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_ASQL_RegisteredUnitsSink",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
 		"folder": {
 			"name": "PL_DATA"
 		},

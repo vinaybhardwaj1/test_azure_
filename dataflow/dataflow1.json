@@ -26,20 +26,23 @@
 					"name": "FormatRegUnits"
 				},
 				{
-					"name": "parse1"
+					"name": "parseRegUnitXML"
 				}
 			],
 			"scriptLines": [
-				"source(allowSchemaDrift: true,",
+				"source(output(",
+				"          OutboundData as ({@DatasetName} as string, {@DatasetType} as string, {@Date} as date, {@DateType} as string, {@PublishTime} as string, PUB_DailyRegisteredUnits as ({@AOLRRegistered} as boolean, {@AssociatedParticipantID} as string, {@AssociatedParticipantName} as string, {@Intermediary} as boolean, {@PartyID} as string, {@PartyName} as string, {@PublishTime} as string, {@ROW} as short, {@RegistrationDate} as string, {@Status} as string, {@TradingSiteID} as string, {@UnitID} as string, {@UnitName} as string, {@UnitType} as string)[])",
+				"     ),",
+				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
 				"     validationMode: 'none',",
 				"     namespaces: true) ~> RegUnitsSource",
-				"parse1 select(skipDuplicateMapInputs: true,",
+				"parseRegUnitXML select(skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> FormatRegUnits",
-				"RegUnitsSource parse(unit_id = ERROR_FUNCTION(''),",
+				"RegUnitsSource parse(OutboundData = PUB_DailyRegisteredUnits,",
 				"     format: 'xml',",
-				"     namespaces: true) ~> parse1",
+				"     namespaces: true) ~> parseRegUnitXML",
 				"FormatRegUnits sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
