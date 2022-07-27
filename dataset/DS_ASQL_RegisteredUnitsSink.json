@@ -16,6 +16,10 @@
 				"type": "nvarchar"
 			},
 			{
+				"name": "unit_name",
+				"type": "nvarchar"
+			},
+			{
 				"name": "unit_type",
 				"type": "nvarchar"
 			},
@@ -41,11 +45,11 @@
 			},
 			{
 				"name": "intermediary",
-				"type": "char"
+				"type": "bit"
 			},
 			{
 				"name": "aolr_registered",
-				"type": "char"
+				"type": "bit"
 			},
 			{
 				"name": "status",
