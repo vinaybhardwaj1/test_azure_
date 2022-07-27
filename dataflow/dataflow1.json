@@ -1,0 +1,70 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_FILE_RegisteredUnitsSource",
+						"type": "DatasetReference"
+					},
+					"name": "RegUnitsSource"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_ASQL_RegisteredUnitsSink",
+						"type": "DatasetReference"
+					},
+					"name": "RegUnitsSink"
+				}
+			],
+			"transformations": [
+				{
+					"name": "FormatRegUnits"
+				},
+				{
+					"name": "parse1"
+				}
+			],
+			"scriptLines": [
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     validationMode: 'none',",
+				"     namespaces: true) ~> RegUnitsSource",
+				"parse1 select(skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> FormatRegUnits",
+				"RegUnitsSource parse(unit_id = ERROR_FUNCTION(''),",
+				"     format: 'xml',",
+				"     namespaces: true) ~> parse1",
+				"FormatRegUnits sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          unit_id as string,",
+				"          unit_type as string,",
+				"          party_id as string,",
+				"          party_name as string,",
+				"          associated_participant_id as string,",
+				"          associated_participant_name as string,",
+				"          trading_site_id as string,",
+				"          intermediary as string,",
+				"          aolr_registered as string,",
+				"          status as string,",
+				"          registration_date as timestamp,",
+				"          last_updated as timestamp",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> RegUnitsSink"
+			]
+		}
+	}
+}
