@@ -23,19 +23,10 @@
 			],
 			"transformations": [
 				{
-					"name": "FormatRegUnits"
-				},
-				{
-					"name": "parseRegUnitXML"
-				},
-				{
-					"name": "select1"
-				},
-				{
-					"name": "parse1"
-				},
-				{
 					"name": "FlattenRegUnitsXML"
+				},
+				{
+					"name": "AddLastUpdated"
 				}
 			],
 			"scriptLines": [
@@ -47,41 +38,6 @@
 				"     ignoreNoFilesFound: false,",
 				"     validationMode: 'none',",
 				"     namespaces: true) ~> RegUnitsSource",
-				"select1 select(skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> FormatRegUnits",
-				"parse1 parse(unit_id = OutboundData.PUB_DailyRegisteredUnits.{@UnitID} ? string[],",
-				"          unit_type = OutboundData.PUB_DailyRegisteredUnits.{@UnitType} ? string[],",
-				"          party_id = OutboundData.PUB_DailyRegisteredUnits.{@PartyID} ? string[],",
-				"          party_name = OutboundData.PUB_DailyRegisteredUnits.{@PartyName} ? string[],",
-				"          associated_participant_id = OutboundData.PUB_DailyRegisteredUnits.{@AssociatedParticipantID} ? string,",
-				"          associated_participant_name = OutboundData.PUB_DailyRegisteredUnits.{@AssociatedParticipantName} ? string,",
-				"          trading_site_id = OutboundData.PUB_DailyRegisteredUnits.{@TradingSiteID} ? string,",
-				"          intermediary = OutboundData.PUB_DailyRegisteredUnits.{@Intermediary} ? boolean,",
-				"          aolr_registered = OutboundData.PUB_DailyRegisteredUnits.{@AOLRRegistered} ? boolean,",
-				"          status = OutboundData.PUB_DailyRegisteredUnits.{@Status} ? string,",
-				"          registration_date = OutboundData.PUB_DailyRegisteredUnits.{@RegistrationDate} ? timestamp,",
-				"     partitionBy('hash', 1),",
-				"     format: 'xml',",
-				"     namespaces: false) ~> parseRegUnitXML",
-				"parseRegUnitXML select(mapColumn(",
-				"          OutboundData,",
-				"          unit_id,",
-				"          unit_type,",
-				"          party_id,",
-				"          party_name,",
-				"          associated_participant_id,",
-				"          associated_participant_name,",
-				"          trading_site_id,",
-				"          intermediary,",
-				"          aolr_registered,",
-				"          status,",
-				"          registration_date",
-				"     ),",
-				"     skipDuplicateMapInputs: true,",
-				"     skipDuplicateMapOutputs: true) ~> select1",
-				"FlattenRegUnitsXML parse(ListRegUnits = OutboundData ? (OutboundData as (PUB_DailyRegisteredUnits as (PartyID as string))),",
-				"     format: 'xml',",
-				"     namespaces: true) ~> parse1",
 				"RegUnitsSource foldDown(unroll(OutboundData.PUB_DailyRegisteredUnits, OutboundData.PUB_DailyRegisteredUnits),",
 				"     mapColumn(",
 				"          unit_id = OutboundData.PUB_DailyRegisteredUnits.{@UnitID},",
@@ -98,9 +54,11 @@
 				"          trading_site_id = OutboundData.PUB_DailyRegisteredUnits.{@TradingSiteID},",
 				"          unit_type = OutboundData.PUB_DailyRegisteredUnits.{@UnitType}",
 				"     ),",
-				"     skipDuplicateMapInputs: false,",
-				"     skipDuplicateMapOutputs: false) ~> FlattenRegUnitsXML",
-				"FormatRegUnits sink(allowSchemaDrift: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> FlattenRegUnitsXML",
+				"FlattenRegUnitsXML derive(last_updated = currentUTC(),",
+				"          registration_date = toDate(registration_date)) ~> AddLastUpdated",
+				"AddLastUpdated sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          unit_id as string,",
