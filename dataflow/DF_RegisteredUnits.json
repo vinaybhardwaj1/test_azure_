@@ -85,18 +85,18 @@
 				"     errorHandlingOption: 'stopOnFirstError',",
 				"     mapColumn(",
 				"          unit_id,",
+				"          unit_name,",
 				"          unit_type,",
+				"          associated_participant_id,",
 				"          party_id,",
 				"          party_name,",
-				"          associated_participant_id,",
 				"          associated_participant_name,",
 				"          trading_site_id,",
 				"          intermediary,",
 				"          aolr_registered,",
 				"          status,",
 				"          registration_date,",
-				"          last_updated,",
-				"          unit_name",
+				"          last_updated",
 				"     )) ~> RegUnitsSink"
 			]
 		}
