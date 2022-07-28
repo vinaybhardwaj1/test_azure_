@@ -1,0 +1,26 @@
+{
+	"name": "DF_30MinImbalCost",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_FILE_30MinImbalCost_Source",
+						"type": "DatasetReference"
+					},
+					"name": "DF30MinImbalCostSource"
+				}
+			],
+			"sinks": [],
+			"transformations": [],
+			"scriptLines": [
+				"source(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     validationMode: 'none',",
+				"     namespaces: true) ~> DF30MinImbalCostSource"
+			]
+		}
+	}
+}
