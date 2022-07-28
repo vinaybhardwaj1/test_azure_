@@ -1,0 +1,22 @@
+{
+	"name": "DS_30MinImbalCost_Source",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureBlobStorage_test",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "30MinImbalCost"
+		},
+		"annotations": [],
+		"type": "Xml",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "PUB_30MinImbalCost_202207261530.xml",
+				"folderPath": "30MinImbalCost_test",
+				"container": "sqlite-blobstorage"
+			}
+		}
+	}
+}
