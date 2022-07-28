@@ -13,7 +13,6 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "PUB_DailyRegisteredUnits_202206240756.xml",
 				"folderPath": "RegisteredUnits",
 				"container": "sqlite-blobstorage"
 			}
