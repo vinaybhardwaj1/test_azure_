@@ -19,6 +19,13 @@
 						"type": "DatasetReference"
 					},
 					"name": "RegUnitsSink"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_ASQL_ProcessedFilesSink",
+						"type": "DatasetReference"
+					},
+					"name": "ProcessedFilesSink"
 				}
 			],
 			"transformations": [
@@ -27,6 +34,12 @@
 				},
 				{
 					"name": "AddLastUpdated"
+				},
+				{
+					"name": "GetFileMetadata"
+				},
+				{
+					"name": "FormatProcessedFile"
 				}
 			],
 			"scriptLines": [
@@ -38,7 +51,7 @@
 				"     ignoreNoFilesFound: false,",
 				"     validationMode: 'none',",
 				"     namespaces: true) ~> RegUnitsSource",
-				"RegUnitsSource foldDown(unroll(OutboundData.PUB_DailyRegisteredUnits, OutboundData.PUB_DailyRegisteredUnits),",
+				"GetFileMetadata foldDown(unroll(OutboundData.PUB_DailyRegisteredUnits, OutboundData.PUB_DailyRegisteredUnits),",
 				"     mapColumn(",
 				"          unit_id = OutboundData.PUB_DailyRegisteredUnits.{@UnitID},",
 				"          unit_name = OutboundData.PUB_DailyRegisteredUnits.{@UnitName},",
@@ -58,6 +71,16 @@
 				"     skipDuplicateMapOutputs: true) ~> FlattenRegUnitsXML",
 				"FlattenRegUnitsXML derive(last_updated = currentUTC(),",
 				"          registration_date = toDate(registration_date)) ~> AddLastUpdated",
+				"RegUnitsSource foldDown(unroll(),",
+				"     mapColumn(",
+				"          dataset_name = OutboundData.{@DatasetName},",
+				"          file_metadata = OutboundData,",
+				"          publish_time = OutboundData.{@PublishTime}",
+				"     ),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> GetFileMetadata",
+				"GetFileMetadata derive(last_updated = currentUTC(),",
+				"          file_metadata = file_metadata.{@DatasetName} + '|' + file_metadata.{@DatasetType} + '|' + file_metadata.{@DateType}) ~> FormatProcessedFile",
 				"AddLastUpdated sink(allowSchemaDrift: true,",
 				"     validateSchema: true,",
 				"     input(",
@@ -97,7 +120,29 @@
 				"          status,",
 				"          registration_date,",
 				"          last_updated",
-				"     )) ~> RegUnitsSink"
+				"     )) ~> RegUnitsSink",
+				"FormatProcessedFile sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          file_name as string,",
+				"          publish_time as timestamp,",
+				"          file_metadata as string,",
+				"          last_updated as timestamp",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          file_name = dataset_name,",
+				"          last_updated,",
+				"          publish_time,",
+				"          file_metadata",
+				"     )) ~> ProcessedFilesSink"
 			]
 		}
 	}
