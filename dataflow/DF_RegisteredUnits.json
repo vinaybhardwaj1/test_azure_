@@ -33,10 +33,7 @@
 					"name": "FlattenRegUnitsXML"
 				},
 				{
-					"name": "AddLastUpdated"
-				},
-				{
-					"name": "GetFileMetadata"
+					"name": "FormatRegUnits"
 				},
 				{
 					"name": "FormatProcessedFile"
@@ -70,18 +67,12 @@
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true) ~> FlattenRegUnitsXML",
 				"FlattenRegUnitsXML derive(last_updated = currentUTC(),",
-				"          registration_date = toDate(registration_date)) ~> AddLastUpdated",
-				"RegUnitsSource foldDown(unroll(),",
-				"     mapColumn(",
-				"          dataset_name = OutboundData.{@DatasetName},",
-				"          file_metadata = OutboundData,",
-				"          publish_time = OutboundData.{@PublishTime}",
-				"     ),",
-				"     skipDuplicateMapInputs: false,",
-				"     skipDuplicateMapOutputs: false) ~> GetFileMetadata",
-				"GetFileMetadata derive(last_updated = currentUTC(),",
-				"          file_metadata = file_metadata.{@DatasetName} + '|' + file_metadata.{@DatasetType} + '|' + file_metadata.{@DateType}) ~> FormatProcessedFile",
-				"AddLastUpdated sink(allowSchemaDrift: true,",
+				"          registration_date = toDate(registration_date)) ~> FormatRegUnits",
+				"RegUnitsSource derive(last_updated = currentUTC(),",
+				"          file_metadata = concat(OutboundData.{@DatasetType},toString(OutboundData.{@Date}),OutboundData.{@DateType}),",
+				"          file_name = OutboundData.{@DatasetName},",
+				"          publish_time = OutboundData.{@PublishTime}) ~> FormatProcessedFile",
+				"FormatRegUnits sink(allowSchemaDrift: true,",
 				"     validateSchema: true,",
 				"     input(",
 				"          unit_id as string,",
@@ -138,9 +129,9 @@
 				"     skipDuplicateMapOutputs: true,",
 				"     errorHandlingOption: 'stopOnFirstError',",
 				"     mapColumn(",
-				"          file_name = dataset_name,",
+				"          file_name = {OutboundData.{@DatasetName}},",
 				"          last_updated,",
-				"          publish_time,",
+				"          publish_time = {OutboundData.{@PublishTime}},",
 				"          file_metadata",
 				"     )) ~> ProcessedFilesSink"
 			]
