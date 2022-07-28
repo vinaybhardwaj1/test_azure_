@@ -95,7 +95,8 @@
 				"          aolr_registered,",
 				"          status,",
 				"          registration_date,",
-				"          last_updated",
+				"          last_updated,",
+				"          unit_name",
 				"     )) ~> RegUnitsSink"
 			]
 		}
