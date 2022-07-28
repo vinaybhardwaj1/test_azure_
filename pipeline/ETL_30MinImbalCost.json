@@ -33,17 +33,38 @@
 						"writeBehavior": "insert",
 						"sqlWriterUseTableLock": false
 					},
-					"enableStaging": false
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "$['$[\\'OutboundData\\'][\\'PUB_30MinImbalCost_202207261530\\'][0][\\'StartTime\\']']"
+								},
+								"sink": {
+									"name": "StartTime"
+								}
+							},
+							{
+								"source": {
+									"path": "$['$[\\'OutboundData\\'][\\'PUB_30MinImbalCost_202207261530\\'][0][\\'EndTime\\']']"
+								},
+								"sink": {
+									"name": "EndTime"
+								}
+							}
+						]
+					}
 				},
 				"inputs": [
 					{
-						"referenceName": "DS_FILE_30MinImbalCost_Source",
+						"referenceName": "DS_FILE_30MinImbalCostSource",
 						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "DS_ASQL_30MinImbalCost_Sink",
+						"referenceName": "DS_ASQL_30MinImbalCostSink",
 						"type": "DatasetReference"
 					}
 				]
