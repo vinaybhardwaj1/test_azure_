@@ -1,5 +1,5 @@
 {
-	"name": "DS_30MinImbalCost_Source",
+	"name": "DS_FILE_30MinImbalCost_Source",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "AzureBlobStorage_test",
