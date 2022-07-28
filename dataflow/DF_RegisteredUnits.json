@@ -51,7 +51,7 @@
 				"     ignoreNoFilesFound: false,",
 				"     validationMode: 'none',",
 				"     namespaces: true) ~> RegUnitsSource",
-				"GetFileMetadata foldDown(unroll(OutboundData.PUB_DailyRegisteredUnits, OutboundData.PUB_DailyRegisteredUnits),",
+				"RegUnitsSource foldDown(unroll(OutboundData.PUB_DailyRegisteredUnits, OutboundData.PUB_DailyRegisteredUnits),",
 				"     mapColumn(",
 				"          unit_id = OutboundData.PUB_DailyRegisteredUnits.{@UnitID},",
 				"          unit_name = OutboundData.PUB_DailyRegisteredUnits.{@UnitName},",
