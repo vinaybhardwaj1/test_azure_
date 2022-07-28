@@ -1,5 +1,5 @@
 {
-	"name": "ETL_DailyLoadFcast_test",
+	"name": "PL_ETL_DailyLoadFcast",
 	"properties": {
 		"activities": [
 			{

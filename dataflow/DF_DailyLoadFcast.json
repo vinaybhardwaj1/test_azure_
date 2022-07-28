@@ -1,5 +1,5 @@
 {
-	"name": "DFDailyLoadFcast",
+	"name": "DF_DailyLoadFcast",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
