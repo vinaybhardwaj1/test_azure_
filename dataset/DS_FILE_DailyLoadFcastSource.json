@@ -1,9 +1,12 @@
 {
-	"name": "DailyLoadFcast_source",
+	"name": "DS_FILE_DailyLoadFcastSource",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "AzureBlobStorage_test",
 			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "DailyLoadFcast"
 		},
 		"annotations": [],
 		"type": "Xml",

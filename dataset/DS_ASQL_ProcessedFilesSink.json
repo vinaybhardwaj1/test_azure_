@@ -1,0 +1,40 @@
+{
+	"name": "DS_ASQL_ProcessedFilesSink",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDatabase_sink",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "LogTables"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "file_name",
+				"type": "nvarchar"
+			},
+			{
+				"name": "publish_time",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "file_metadata",
+				"type": "text"
+			},
+			{
+				"name": "last_updated",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "processed_files"
+		}
+	}
+}

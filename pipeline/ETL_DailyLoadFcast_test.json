@@ -107,18 +107,21 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "DailyLoadFcast_source",
+						"referenceName": "DS_FILE_DailyLoadFcastSource",
 						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "DailyLoadFcast_test",
+						"referenceName": "DS_ASQL_DailyLoadFcastSink",
 						"type": "DatasetReference"
 					}
 				]
 			}
 		],
+		"folder": {
+			"name": "PL_DATA"
+		},
 		"annotations": []
 	}
 }

@@ -1,0 +1,76 @@
+{
+	"name": "DS_ASQL_RegisteredUnitsSink",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDatabase_sink",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "RegisteredUnits"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "unit_id",
+				"type": "nvarchar"
+			},
+			{
+				"name": "unit_name",
+				"type": "nvarchar"
+			},
+			{
+				"name": "unit_type",
+				"type": "nvarchar"
+			},
+			{
+				"name": "party_id",
+				"type": "nvarchar"
+			},
+			{
+				"name": "party_name",
+				"type": "text"
+			},
+			{
+				"name": "associated_participant_id",
+				"type": "nvarchar"
+			},
+			{
+				"name": "associated_participant_name",
+				"type": "text"
+			},
+			{
+				"name": "trading_site_id",
+				"type": "nvarchar"
+			},
+			{
+				"name": "intermediary",
+				"type": "bit"
+			},
+			{
+				"name": "aolr_registered",
+				"type": "bit"
+			},
+			{
+				"name": "status",
+				"type": "nvarchar"
+			},
+			{
+				"name": "registration_date",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "last_updated",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "registered_units"
+		}
+	}
+}
