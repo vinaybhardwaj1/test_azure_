@@ -52,6 +52,30 @@
 								"sink": {
 									"name": "EndTime"
 								}
+							},
+							{
+								"source": {
+									"path": "$['$[\\'OutboundData\\'][\\'PUB_30MinImbalCost_202207261530\\'][0][\\'ImbalanceVolume\\']']"
+								},
+								"sink": {
+									"name": "ImbalanceVolume"
+								}
+							},
+							{
+								"source": {
+									"path": "$['$[\\'OutboundData\\'][\\'PUB_30MinImbalCost_202207261530\\'][0][\\'ImbalancePrice\\']']"
+								},
+								"sink": {
+									"name": "ImbalancePrice"
+								}
+							},
+							{
+								"source": {
+									"path": "$['$[\\'OutboundData\\'][\\'PUB_30MinImbalCost_202207261530\\'][0][\\'ImbalanceCost\\']']"
+								},
+								"sink": {
+									"name": "ImbalanceCost"
+								}
 							}
 						]
 					}
