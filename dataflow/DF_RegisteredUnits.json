@@ -127,13 +127,7 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError',",
-				"     mapColumn(",
-				"          file_name = {OutboundData.{@DatasetName}},",
-				"          last_updated,",
-				"          publish_time = {OutboundData.{@PublishTime}},",
-				"          file_metadata",
-				"     )) ~> ProcessedFilesSink"
+				"     errorHandlingOption: 'stopOnFirstError') ~> ProcessedFilesSink"
 			]
 		}
 	}
