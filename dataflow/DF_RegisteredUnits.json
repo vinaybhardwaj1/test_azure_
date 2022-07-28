@@ -69,9 +69,7 @@
 				"FlattenRegUnitsXML derive(last_updated = currentUTC(),",
 				"          registration_date = toDate(registration_date)) ~> FormatRegUnits",
 				"RegUnitsSource derive(last_updated = currentUTC(),",
-				"          file_metadata = concat(OutboundData.{@DatasetType},toString(OutboundData.{@Date}),OutboundData.{@DateType}),",
-				"          file_name = OutboundData.{@DatasetName},",
-				"          publish_time = OutboundData.{@PublishTime}) ~> FormatProcessedFile",
+				"          file_metadata = concat(OutboundData.{@DatasetType},toString(OutboundData.{@Date}),OutboundData.{@DateType})) ~> FormatProcessedFile",
 				"FormatRegUnits sink(allowSchemaDrift: true,",
 				"     validateSchema: true,",
 				"     input(",
@@ -127,7 +125,13 @@
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
-				"     errorHandlingOption: 'stopOnFirstError') ~> ProcessedFilesSink"
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          file_name = OutboundData.{@DatasetName},",
+				"          publish_time = OutboundData.{@PublishTime},",
+				"          file_metadata,",
+				"          last_updated",
+				"     )) ~> ProcessedFilesSink"
 			]
 		}
 	}
