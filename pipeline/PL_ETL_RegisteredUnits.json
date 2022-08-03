@@ -1,11 +1,11 @@
 {
-	"name": "PL_ETL_RegisteredUnits_SQL_Source",
+	"name": "PL_ETL_RegisteredUnits",
 	"properties": {
 		"description": "This pipeline extracts registered units data from source table in Azure SQL report and loads data to registered_units, and processed_files tables.",
 		"activities": [
 			{
-				"name": "GetFileMetadata",
-				"type": "GetMetadata",
+				"name": "LookupLastVersion",
+				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
 					"timeout": "7.00:00:00",
@@ -16,106 +16,137 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"dataset": {
-						"referenceName": "DS_FILE_RegisteredUnitsSource",
-						"type": "DatasetReference"
+					"source": {
+						"type": "AzureSqlSource",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
 					},
-					"fieldList": [
-						"childItems"
-					],
-					"storeSettings": {
-						"type": "AzureBlobStorageReadSettings",
-						"recursive": true,
-						"enablePartitionDiscovery": false
+					"dataset": {
+						"referenceName": "DS_ASQL_ChangeTracking",
+						"type": "DatasetReference"
 					}
 				}
 			},
 			{
-				"name": "ForEachFile",
-				"type": "ForEach",
+				"name": "LookupCurrentVersion",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "SELECT CHANGE_TRACKING_CURRENT_VERSION() as CurrentChangeTrackingVersion",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DS_ASQL_RegisteredUnitsSource_SQL",
+						"type": "DatasetReference"
+					}
+				}
+			},
+			{
+				"name": "IncrementalCopyRegisteredUnits",
+				"type": "Copy",
 				"dependsOn": [
 					{
-						"activity": "GetFileMetadata",
+						"activity": "LookupCurrentVersion",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "LookupLastVersion",
 						"dependencyConditions": [
 							"Succeeded"
 						]
 					}
 				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
 				"userProperties": [],
 				"typeProperties": {
-					"items": {
-						"value": "@activity('GetFileMetadata').output.childItems",
-						"type": "Expression"
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderQuery": "elect registered_units_source.*, CT.SYS_CHANGE_VERSION, SYS_CHANGE_OPERATION\nfrom registered_units_source RIGHT OUTER JOIN CHANGETABLE(CHANGES data_source_table, @  {activity\n('LookupLastVersion').output.firstRow.SYS_CHANGE_VERSION}) as CT on data_source_table.PersonID = CT.PersonID where CT.SYS_CHANGE_VERSION <= @{activity\n('LookupCurrentVersion').output.firstRow.CurrentChangeTrackingVersion};",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
 					},
-					"activities": [
-						{
-							"name": "DF_RegisteredUnits",
-							"type": "ExecuteDataFlow",
-							"dependsOn": [],
-							"policy": {
-								"timeout": "1.00:00:00",
-								"retry": 0,
-								"retryIntervalInSeconds": 30,
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"dataflow": {
-									"referenceName": "DF_RegisteredUnits",
-									"type": "DataFlowReference",
-									"parameters": {
-										"curr_file_name": {
-											"value": "'@{item()['name']}'",
-											"type": "Expression"
-										}
-									}
-								},
-								"compute": {
-									"coreCount": 8,
-									"computeType": "General"
-								},
-								"traceLevel": "Fine"
-							}
-						},
-						{
-							"name": "LookupLastVersion",
-							"type": "Lookup",
-							"dependsOn": [],
-							"policy": {
-								"timeout": "7.00:00:00",
-								"retry": 0,
-								"retryIntervalInSeconds": 30,
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"source": {
-									"type": "AzureSqlSource",
-									"queryTimeout": "02:00:00",
-									"partitionOption": "None"
-								},
-								"dataset": {
-									"referenceName": "DS_ASQL_ChangeTracking",
-									"type": "DatasetReference"
-								}
-							}
-						},
-						{
-							"name": "LookupCurrentVersion",
-							"type": "Lookup",
-							"dependsOn": [],
-							"policy": {
-								"timeout": "7.00:00:00",
-								"retry": 0,
-								"retryIntervalInSeconds": 30,
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": []
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
 						}
-					]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_ASQL_RegisteredUnitsSource_SQL",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_ASQL_RegisteredUnitsSink",
+						"type": "DatasetReference"
+					}
+				]
+			},
+			{
+				"name": "SP_UpdateChangeTracking",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "IncrementalCopyRegisteredUnits",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[Update_ChangeTracking_Version]",
+					"storedProcedureParameters": {
+						"CurrentTrackingVersion": {
+							"value": "@{activity('LookupCurrentVersion').output.firstRow.CurrentChangeTrackingVersion}",
+							"type": "Int64"
+						},
+						"TableName": {
+							"value": "@{activity('LookupLastVersion').output.firstRow.table_name}",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabase_sink",
+					"type": "LinkedServiceReference"
 				}
 			}
 		],
