@@ -1,7 +1,7 @@
 {
-	"name": "PL_ETL_RegisteredUnits",
+	"name": "PL_ETL_RegisteredUnits_SQL_Source",
 	"properties": {
-		"description": "This pipeline extracts registered units data from xml report and loads data to registered_units, and processed_files tables.",
+		"description": "This pipeline extracts registered units data from source table in Azure SQL report and loads data to registered_units, and processed_files tables.",
 		"activities": [
 			{
 				"name": "GetFileMetadata",

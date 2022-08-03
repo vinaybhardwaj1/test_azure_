@@ -1,5 +1,5 @@
 {
-	"name": "ChangeTrackingDataset",
+	"name": "DS_ASQL_ChangeTracking",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "AzureSqlDatabase_sink",
