@@ -1,0 +1,159 @@
+{
+	"name": "DF_RegisteredUnits_SQL",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_ASQL_RegisteredUnitsSource_SQL",
+						"type": "DatasetReference"
+					},
+					"name": "RegUnitsSource"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "DS_ASQL_RegisteredUnitsSink",
+						"type": "DatasetReference"
+					},
+					"name": "RegUnitsSink"
+				},
+				{
+					"dataset": {
+						"referenceName": "DS_ASQL_ProcessedFilesSink",
+						"type": "DatasetReference"
+					},
+					"name": "ProcessedFilesSink"
+				}
+			],
+			"transformations": [
+				{
+					"name": "FlattenRegUnitsXML"
+				},
+				{
+					"name": "FormatRegUnits"
+				},
+				{
+					"name": "FormatProcessedFile"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     curr_file_name as string",
+				"}",
+				"source(output(",
+				"          unit_id as string,",
+				"          unit_name as string,",
+				"          unit_type as string,",
+				"          party_id as string,",
+				"          party_name as string,",
+				"          associated_participant_id as string,",
+				"          associated_participant_name as string,",
+				"          trading_site_id as string,",
+				"          intermediary as boolean,",
+				"          aolr_registered as boolean,",
+				"          status as string,",
+				"          registration_date as timestamp,",
+				"          last_updated as timestamp",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> RegUnitsSource",
+				"RegUnitsSource foldDown(unroll(OutboundData.PUB_DailyRegisteredUnits, OutboundData.PUB_DailyRegisteredUnits),",
+				"     mapColumn(",
+				"          unit_id = OutboundData.PUB_DailyRegisteredUnits.{@UnitID},",
+				"          unit_name = OutboundData.PUB_DailyRegisteredUnits.{@UnitName},",
+				"          aolr_registered = OutboundData.PUB_DailyRegisteredUnits.{@AOLRRegistered},",
+				"          associated_participant_id = OutboundData.PUB_DailyRegisteredUnits.{@AssociatedParticipantID},",
+				"          associated_participant_name = OutboundData.PUB_DailyRegisteredUnits.{@AssociatedParticipantName},",
+				"          intermediary = OutboundData.PUB_DailyRegisteredUnits.{@Intermediary},",
+				"          party_id = OutboundData.PUB_DailyRegisteredUnits.{@PartyID},",
+				"          party_name = OutboundData.PUB_DailyRegisteredUnits.{@PartyName},",
+				"          publish_time = OutboundData.PUB_DailyRegisteredUnits.{@PublishTime},",
+				"          registration_date = OutboundData.PUB_DailyRegisteredUnits.{@RegistrationDate},",
+				"          status = OutboundData.PUB_DailyRegisteredUnits.{@Status},",
+				"          trading_site_id = OutboundData.PUB_DailyRegisteredUnits.{@TradingSiteID},",
+				"          unit_type = OutboundData.PUB_DailyRegisteredUnits.{@UnitType}",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> FlattenRegUnitsXML",
+				"FlattenRegUnitsXML derive(last_updated = currentUTC(),",
+				"          registration_date = toDate(registration_date)) ~> FormatRegUnits",
+				"RegUnitsSource derive(last_updated = currentUTC(),",
+				"          file_metadata = concat(\r",
+				"    'DatasetType: ',OutboundData.{@DatasetType},\r",
+				"    ' Date: ',toString(OutboundData.{@Date}),\r",
+				"    ' DateType: ',OutboundData.{@DateType}),",
+				"          published_time_cast = toTimestamp(OutboundData.{@PublishTime},\"yyyy-MM-dd'T'HH:mm:ss\"),",
+				"          file_name = $curr_file_name) ~> FormatProcessedFile",
+				"FormatRegUnits sink(allowSchemaDrift: true,",
+				"     validateSchema: true,",
+				"     input(",
+				"          unit_id as string,",
+				"          unit_name as string,",
+				"          unit_type as string,",
+				"          party_id as string,",
+				"          party_name as string,",
+				"          associated_participant_id as string,",
+				"          associated_participant_name as string,",
+				"          trading_site_id as string,",
+				"          intermediary as boolean,",
+				"          aolr_registered as boolean,",
+				"          status as string,",
+				"          registration_date as timestamp,",
+				"          last_updated as timestamp",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          unit_id,",
+				"          unit_name,",
+				"          unit_type,",
+				"          associated_participant_id,",
+				"          party_id,",
+				"          party_name,",
+				"          associated_participant_name,",
+				"          trading_site_id,",
+				"          intermediary,",
+				"          aolr_registered,",
+				"          status,",
+				"          registration_date,",
+				"          last_updated",
+				"     )) ~> RegUnitsSink",
+				"FormatProcessedFile sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          file_name as string,",
+				"          publish_time as timestamp,",
+				"          file_metadata as string,",
+				"          last_updated as timestamp",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     truncate:true,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          file_name,",
+				"          publish_time = published_time_cast,",
+				"          file_metadata,",
+				"          last_updated",
+				"     )) ~> ProcessedFilesSink"
+			]
+		}
+	}
+}
