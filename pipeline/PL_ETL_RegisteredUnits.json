@@ -80,7 +80,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderQuery": "elect registered_units_source.*, CT.SYS_CHANGE_VERSION, SYS_CHANGE_OPERATION\nfrom registered_units_source RIGHT OUTER JOIN CHANGETABLE(CHANGES data_source_table, @  {activity\n('LookupLastVersion').output.firstRow.SYS_CHANGE_VERSION}) as CT on data_source_table.PersonID = CT.PersonID where CT.SYS_CHANGE_VERSION <= @{activity\n('LookupCurrentVersion').output.firstRow.CurrentChangeTrackingVersion};",
+						"sqlReaderQuery": "Select registered_units_source.*, CT.SYS_CHANGE_VERSION, SYS_CHANGE_OPERATION\nfrom registered_units_source RIGHT OUTER JOIN CHANGETABLE(CHANGES data_source_table, @  {activity\n('LookupLastVersion').output.firstRow.SYS_CHANGE_VERSION}) as CT on data_source_table.PersonID = CT.PersonID where CT.SYS_CHANGE_VERSION <= @{activity\n('LookupCurrentVersion').output.firstRow.CurrentChangeTrackingVersion};",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
