@@ -29,7 +29,7 @@
 			},
 			{
 				"name": "party_name",
-				"type": "text"
+				"type": "nvarchar"
 			},
 			{
 				"name": "associated_participant_id",
@@ -37,7 +37,7 @@
 			},
 			{
 				"name": "associated_participant_name",
-				"type": "text"
+				"type": "nvarchar"
 			},
 			{
 				"name": "trading_site_id",
