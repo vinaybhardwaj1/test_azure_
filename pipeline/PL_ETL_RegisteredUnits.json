@@ -25,6 +25,7 @@
 					],
 					"storeSettings": {
 						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
 						"enablePartitionDiscovery": false
 					}
 				}
@@ -72,6 +73,15 @@
 							"typeProperties": {
 								"source": {
 									"type": "XmlSource",
+									"additionalColumns": [
+										{
+											"name": "last_updated",
+											"value": {
+												"value": "@utcnow()",
+												"type": "Expression"
+											}
+										}
+									],
 									"storeSettings": {
 										"type": "AzureBlobStorageReadSettings",
 										"recursive": true,
@@ -213,11 +223,10 @@
 										},
 										{
 											"source": {
-												"path": "$['@utcnow()']"
+												"path": "$['last_updated']"
 											},
 											"sink": {
-												"name": "last_updated",
-												"type": "DateTime"
+												"name": "last_updated"
 											}
 										}
 									],
