@@ -233,7 +233,7 @@
 							],
 							"outputs": [
 								{
-									"referenceName": "DS_ASQL_RegisteredUnitsRaw",
+									"referenceName": "DS_ASQL_RegisteredUnitsRawSink",
 									"type": "DatasetReference"
 								}
 							]

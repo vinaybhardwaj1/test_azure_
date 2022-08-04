@@ -1,5 +1,5 @@
 {
-	"name": "DS_ASQL_RegisteredUnitsLog",
+	"name": "DS_ASQL_RegisteredUnitsLogSink",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "AzureSqlDatabase_sink",
