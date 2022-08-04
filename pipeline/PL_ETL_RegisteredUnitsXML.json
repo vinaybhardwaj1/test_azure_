@@ -1,5 +1,5 @@
 {
-	"name": "PL_Parse_RegisteredUnitsXML",
+	"name": "PL_ETL_RegisteredUnitsXML",
 	"properties": {
 		"description": "This pipeline extracts registered units data from xml report and loads data to registered_units, and processed_files tables.",
 		"activities": [
@@ -46,6 +46,7 @@
 						"value": "@activity('GetFileList').output.childItems",
 						"type": "Expression"
 					},
+					"isSequential": false,
 					"activities": [
 						{
 							"name": "ParseRegUnitsXMLToSQL",
