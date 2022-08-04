@@ -1,5 +1,5 @@
 {
-	"name": "DS_ASQL_RegisteredUnitsSource_SQL",
+	"name": "DS_ASQL_RegisteredUnitsRaw",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "AzureSqlDatabase_sink",
@@ -45,11 +45,11 @@
 			},
 			{
 				"name": "intermediary",
-				"type": "bit"
+				"type": "char"
 			},
 			{
 				"name": "aolr_registered",
-				"type": "bit"
+				"type": "char"
 			},
 			{
 				"name": "status",
@@ -57,12 +57,6 @@
 			},
 			{
 				"name": "registration_date",
-				"type": "datetime",
-				"precision": 23,
-				"scale": 3
-			},
-			{
-				"name": "last_updated",
 				"type": "datetime",
 				"precision": 23,
 				"scale": 3

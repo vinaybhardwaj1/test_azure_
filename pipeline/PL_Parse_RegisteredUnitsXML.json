@@ -166,7 +166,7 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "DS_ASQL_RegisteredUnitsSource_SQL",
+						"referenceName": "DS_ASQL_RegisteredUnitsRaw",
 						"type": "DatasetReference"
 					}
 				]

@@ -47,7 +47,7 @@
 						"partitionOption": "None"
 					},
 					"dataset": {
-						"referenceName": "DS_ASQL_RegisteredUnitsSource_SQL",
+						"referenceName": "DS_ASQL_RegisteredUnitsRaw",
 						"type": "DatasetReference"
 					}
 				}
@@ -80,7 +80,10 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderQuery": "select registered_units_source.*, CT.SYS_CHANGE_VERSION, SYS_CHANGE_OPERATION\nfrom registered_units_source RIGHT OUTER JOIN CHANGETABLE(CHANGES registered_units_source, @{activity('LookupLastVersion').output.firstRow.SYS_CHANGE_VERSION}) as CT \non registered_units_source.unit_id = CT.unit_id where CT.SYS_CHANGE_VERSION <= @{activity('LookupCurrentVersion').output.firstRow.CurrentChangeTrackingVersion};",
+						"sqlReaderQuery": {
+							"value": "select registered_units_source.*, CT.SYS_CHANGE_VERSION, SYS_CHANGE_OPERATION\nfrom registered_units_source RIGHT OUTER JOIN CHANGETABLE(CHANGES registered_units_source, @{activity('LookupLastVersion').output.firstRow.SYS_CHANGE_VERSION}) as CT \non registered_units_source.unit_id = CT.unit_id where CT.SYS_CHANGE_VERSION <= @{activity('LookupCurrentVersion').output.firstRow.CurrentChangeTrackingVersion};",
+							"type": "Expression"
+						},
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
@@ -101,7 +104,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "DS_ASQL_RegisteredUnitsSource_SQL",
+						"referenceName": "DS_ASQL_RegisteredUnitsRaw",
 						"type": "DatasetReference"
 					}
 				],
@@ -135,11 +138,17 @@
 					"storedProcedureName": "[dbo].[Update_ChangeTracking_Version]",
 					"storedProcedureParameters": {
 						"CurrentTrackingVersion": {
-							"value": "@{activity('LookupCurrentVersion').output.firstRow.CurrentChangeTrackingVersion}",
+							"value": {
+								"value": "@{activity('LookupCurrentVersion').output.firstRow.CurrentChangeTrackingVersion}",
+								"type": "Expression"
+							},
 							"type": "Int64"
 						},
 						"TableName": {
-							"value": "@{activity('LookupLastVersion').output.firstRow.table_name}",
+							"value": {
+								"value": "@{activity('LookupLastVersion').output.firstRow.table_name}",
+								"type": "Expression"
+							},
 							"type": "String"
 						}
 					}
