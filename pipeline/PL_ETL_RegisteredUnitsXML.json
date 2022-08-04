@@ -239,7 +239,7 @@
 							]
 						},
 						{
-							"name": "Execute Pipeline1",
+							"name": "RunRegUnitsCDC",
 							"type": "ExecutePipeline",
 							"dependsOn": [
 								{
