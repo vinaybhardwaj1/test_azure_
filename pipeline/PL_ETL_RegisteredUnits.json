@@ -1,5 +1,5 @@
 {
-	"name": "PL_ETL_RegisteredUnitsXML",
+	"name": "PL_ETL_RegisteredUnits",
 	"properties": {
 		"description": "This pipeline extracts registered units data from xml report and loads data to registered_units, and processed_files tables.",
 		"activities": [
