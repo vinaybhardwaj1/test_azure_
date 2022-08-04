@@ -48,6 +48,24 @@
 						"mappings": [
 							{
 								"source": {
+									"path": "['@UnitName']"
+								},
+								"sink": {
+									"name": "unit_name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "['@Intermediary']"
+								},
+								"sink": {
+									"name": "intermediary",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
 									"path": "['@PartyID']"
 								},
 								"sink": {
@@ -138,24 +156,16 @@
 							},
 							{
 								"source": {
-									"path": "$['OutboundData']['@Intermediary']"
+									"path": "$['OutboundData']['@utcnow()']"
 								},
 								"sink": {
-									"name": "intermediary",
-									"type": "String"
-								}
-							},
-							{
-								"source": {
-									"path": "$['OutboundData']['@UnitName']"
-								},
-								"sink": {
-									"name": "unit_name",
-									"type": "String"
+									"name": "last_updated",
+									"type": "DateTime"
 								}
 							}
 						],
-						"collectionReference": "$['OutboundData']['PUB_DailyRegisteredUnits']"
+						"collectionReference": "$['OutboundData']['PUB_DailyRegisteredUnits']",
+						"mapComplexValuesToString": false
 					}
 				},
 				"inputs": [
