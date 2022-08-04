@@ -37,6 +37,9 @@
 				},
 				{
 					"name": "FormatProcessedFile"
+				},
+				{
+					"name": "AlterRow1"
 				}
 			],
 			"scriptLines": [
@@ -49,8 +52,11 @@
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     ignoreNoFilesFound: false,",
+				"     moveFiles: ['RegisteredUnits','ProcessedFiles/RegisteredUnits'],",
+				"     fileList: true,",
 				"     validationMode: 'none',",
-				"     namespaces: true) ~> RegUnitsSource",
+				"     namespaces: true,",
+				"     wildcardPaths:[($curr_file_name)]) ~> RegUnitsSource",
 				"RegUnitsSource foldDown(unroll(OutboundData.PUB_DailyRegisteredUnits, OutboundData.PUB_DailyRegisteredUnits),",
 				"     mapColumn(",
 				"          unit_id = OutboundData.PUB_DailyRegisteredUnits.{@UnitID},",
@@ -78,7 +84,8 @@
 				"    ' DateType: ',OutboundData.{@DateType}),",
 				"          published_time_cast = toTimestamp(OutboundData.{@PublishTime},\"yyyy-MM-dd'T'HH:mm:ss\"),",
 				"          file_name = $curr_file_name) ~> FormatProcessedFile",
-				"FormatRegUnits sink(allowSchemaDrift: true,",
+				"FormatRegUnits alterRow(upsertIf(iifNull(unit_id) == False)) ~> AlterRow1",
+				"AlterRow1 sink(allowSchemaDrift: true,",
 				"     validateSchema: true,",
 				"     input(",
 				"          unit_id as string,",
@@ -98,8 +105,8 @@
 				"     deletable:false,",
 				"     insertable:true,",
 				"     updateable:false,",
-				"     upsertable:false,",
-				"     truncate:true,",
+				"     upsertable:true,",
+				"     keys:['unit_id'],",
 				"     format: 'table',",
 				"     skipDuplicateMapInputs: true,",
 				"     skipDuplicateMapOutputs: true,",
