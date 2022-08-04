@@ -153,15 +153,6 @@
 									"name": "registration_date",
 									"type": "DateTime"
 								}
-							},
-							{
-								"source": {
-									"path": "$['utcnow()']"
-								},
-								"sink": {
-									"name": "last_updated",
-									"type": "DateTime"
-								}
 							}
 						],
 						"collectionReference": "$['OutboundData']['PUB_DailyRegisteredUnits']",
