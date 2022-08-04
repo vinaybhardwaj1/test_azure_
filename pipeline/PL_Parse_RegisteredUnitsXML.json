@@ -156,7 +156,7 @@
 							},
 							{
 								"source": {
-									"path": "$['OutboundData']['@utcnow()']"
+									"path": "$['utcnow()']"
 								},
 								"sink": {
 									"name": "last_updated",
