@@ -1,5 +1,5 @@
 {
-	"name": "DS_ASQL_RegisteredUnitsRaw",
+	"name": "DS_ASQL_RegisteredUnitsRawSink",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "AzureSqlDatabase_sink",
