@@ -4,44 +4,7 @@
 		"description": "This pipeline extracts registered units data from xml report and loads data to registered_units, and processed_files tables.",
 		"activities": [
 			{
-				"name": "DF_RegisteredUnits",
-				"type": "ExecuteDataFlow",
-				"dependsOn": [
-					{
-						"activity": "GetFileMetadata",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
-				"policy": {
-					"timeout": "1.00:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"dataflow": {
-						"referenceName": "DF_RegisteredUnits",
-						"type": "DataFlowReference",
-						"parameters": {
-							"curr_file_name": {
-								"value": "'@{activity('GetFileMetadata').output.itemName}'",
-								"type": "Expression"
-							}
-						}
-					},
-					"compute": {
-						"coreCount": 8,
-						"computeType": "General"
-					},
-					"traceLevel": "Fine"
-				}
-			},
-			{
-				"name": "GetFileMetadata",
+				"name": "GetFileList",
 				"type": "GetMetadata",
 				"dependsOn": [],
 				"policy": {
@@ -58,17 +21,249 @@
 						"type": "DatasetReference"
 					},
 					"fieldList": [
-						"itemName"
+						"childItems"
 					],
 					"storeSettings": {
 						"type": "AzureBlobStorageReadSettings",
 						"enablePartitionDiscovery": false
 					}
 				}
+			},
+			{
+				"name": "ForEachFileLoad",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "GetFileList",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('GetFileList').output.childItems",
+						"type": "Expression"
+					},
+					"isSequential": false,
+					"activities": [
+						{
+							"name": "ParseRegUnitsXMLToSQL",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [
+								{
+									"name": "Source",
+									"value": "sqlite-blobstorage/RegisteredUnits/"
+								},
+								{
+									"name": "Destination",
+									"value": "dbo.registered_units_source"
+								}
+							],
+							"typeProperties": {
+								"source": {
+									"type": "XmlSource",
+									"storeSettings": {
+										"type": "AzureBlobStorageReadSettings",
+										"recursive": true,
+										"wildcardFileName": {
+											"value": "@item()['name']",
+											"type": "Expression"
+										},
+										"enablePartitionDiscovery": false
+									},
+									"formatSettings": {
+										"type": "XmlReadSettings",
+										"validationMode": "none",
+										"namespaces": true
+									}
+								},
+								"sink": {
+									"type": "AzureSqlSink",
+									"writeBehavior": "upsert",
+									"upsertSettings": {
+										"useTempDB": true,
+										"keys": [
+											"unit_id"
+										]
+									},
+									"sqlWriterUseTableLock": false,
+									"disableMetricsCollection": false
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"mappings": [
+										{
+											"source": {
+												"path": "['@UnitName']"
+											},
+											"sink": {
+												"name": "unit_name",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['@Intermediary']"
+											},
+											"sink": {
+												"name": "intermediary",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['@PartyID']"
+											},
+											"sink": {
+												"name": "party_id",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['@PartyName']"
+											},
+											"sink": {
+												"name": "party_name",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['@AssociatedParticipantID']"
+											},
+											"sink": {
+												"name": "associated_participant_id",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['@AssociatedParticipantName']"
+											},
+											"sink": {
+												"name": "associated_participant_name",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['@TradingSiteID']"
+											},
+											"sink": {
+												"name": "trading_site_id",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['@UnitID']"
+											},
+											"sink": {
+												"name": "unit_id",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['@UnitType']"
+											},
+											"sink": {
+												"name": "unit_type",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['@AOLRRegistered']"
+											},
+											"sink": {
+												"name": "aolr_registered",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['@Status']"
+											},
+											"sink": {
+												"name": "status",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "['@RegistrationDate']"
+											},
+											"sink": {
+												"name": "registration_date",
+												"type": "DateTime"
+											}
+										},
+										{
+											"source": {
+												"path": "$['@utcnow()']"
+											},
+											"sink": {
+												"name": "last_updated",
+												"type": "DateTime"
+											}
+										}
+									],
+									"collectionReference": "$['OutboundData']['PUB_DailyRegisteredUnits']",
+									"mapComplexValuesToString": false
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "DS_FILE_RegisteredUnitsSource",
+									"type": "DatasetReference"
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "DS_ASQL_RegisteredUnitsRawSink",
+									"type": "DatasetReference"
+								}
+							]
+						},
+						{
+							"name": "RunRegUnitsCDC",
+							"type": "ExecutePipeline",
+							"dependsOn": [
+								{
+									"activity": "ParseRegUnitsXMLToSQL",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"pipeline": {
+									"referenceName": "PL_CDC_RegisteredUnits",
+									"type": "PipelineReference"
+								},
+								"waitOnCompletion": true
+							}
+						}
+					]
+				}
 			}
 		],
 		"folder": {
-			"name": "PL_DATA"
+			"name": "PL_DATA_Tables"
 		},
 		"annotations": []
 	}
