@@ -1,5 +1,5 @@
 {
-	"name": "PL_CDC_RegisteredUnits",
+	"name": "PL_ChangeLog_RegisteredUnits",
 	"properties": {
 		"description": "This pipeline extracts registered units data from source table in Azure SQL report and loads data to registered_units, and processed_files tables.",
 		"activities": [

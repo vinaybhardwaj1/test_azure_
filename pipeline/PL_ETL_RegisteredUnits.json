@@ -248,7 +248,7 @@
 							]
 						},
 						{
-							"name": "RunRegUnitsCDC",
+							"name": "RunRegUnitsChangeLogging",
 							"type": "ExecutePipeline",
 							"dependsOn": [
 								{
@@ -261,7 +261,7 @@
 							"userProperties": [],
 							"typeProperties": {
 								"pipeline": {
-									"referenceName": "PL_CDC_RegisteredUnits",
+									"referenceName": "PL_ChangeLog_RegisteredUnits",
 									"type": "PipelineReference"
 								},
 								"waitOnCompletion": true
